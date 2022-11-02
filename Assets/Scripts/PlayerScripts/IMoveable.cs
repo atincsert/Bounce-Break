@@ -6,7 +6,7 @@ public interface IMoveable
 {
     void MoveForward();
 
-    void MoveHorizontally();
+    void MoveHorizontally(Vector2 direction);
 
-    void RestrictMovementPos();
+    bool IsOutOfRange();
 }

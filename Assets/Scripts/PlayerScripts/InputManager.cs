@@ -5,51 +5,64 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
-    private float playerInput;
-    private PlayerMove playerMove;
+    private bool isTouching = false;
+    private Vector2 pointA;
+    private Vector2 pointB;
 
-    private void Awake()
-    {
-        playerMove = FindObjectOfType<PlayerMove>();
-    }
+    public Vector2 PointA { get => pointA; set => pointA = value; }
+    public Vector2 PointB { get => pointB; set => pointB = value; }
 
     private void Update()
     {
-        GetInput();
+        //GetInput();
+        TouchInput();
     }
 
-    private void GetInput()
+    public void TouchInput()
     {
-
-#if !UNITY_EDITOR
-
-        // Touch Controls
-
-#endif
-
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButtonDown(0))
         {
-            playerInput = Input.GetAxisRaw("Mouse X");
-            CalculateMouseInput(playerInput);
+            isTouching = true;
+            pointA = Camera.main.ScreenToViewportPoint(new Vector3(Input.mousePosition.x, 0, 0));
         }
-    }
-
-    private void CalculateMouseInput(float playerInput)
-    {
-        if (playerInput + Mathf.Epsilon < 0f)
+        else if (Input.GetMouseButton(0))
         {
-            playerInput = -1f;
-            playerMove.DesiredVelocity = playerInput * playerMove.Speed;
-        }
-        else if (playerInput - Mathf.Epsilon > 0f)
-        {
-            playerInput = 1f;
-            playerMove.DesiredVelocity = playerInput * playerMove.Speed;
+            pointA = pointB;
+            isTouching = true;
+            pointB = Camera.main.ScreenToViewportPoint(new Vector3(Input.mousePosition.x, 0, 0));
         }
         else
         {
-            playerInput = 0f;
-            playerMove.DesiredVelocity = 0f;
+            isTouching = false;
         }
     }
+
+    //private void GetInput()
+    //{
+
+    //    if (Input.GetMouseButton(0))
+    //    {
+    //        playerInput = Input.GetAxisRaw("Mouse X");
+    //        CalculateMouseInput(playerInput);
+    //    }
+    //}
+
+    //private void CalculateMouseInput(float playerInput)
+    //{
+    //    if (playerInput + Mathf.Epsilon < 0f)
+    //    {
+    //        playerInput = -1f;
+    //        playerMove.DesiredVelocity = playerInput * playerMove.Speed;
+    //    }
+    //    else if (playerInput - Mathf.Epsilon > 0f)
+    //    {
+    //        playerInput = 1f;
+    //        playerMove.DesiredVelocity = playerInput * playerMove.Speed;
+    //    }
+    //    else
+    //    {
+    //        playerInput = 0f;
+    //        playerMove.DesiredVelocity = 0f;
+    //    }
+    //}
 }
