@@ -78,36 +78,7 @@ public class Test : MonoBehaviour
             Vector2 displacement = pointB - pointA;
             Vector3 direction = new Vector3(displacement.normalized.x, displacement.normalized.y, 1f);
 
-            SetMoveDirection(direction);
-
-            //int sign = (int)Mathf.Sign(direction.x); // refactor
-
-            //if (Mathf.Approximately(rb.position.x, minXPos))
-            //{
-            //    if (sign == -1) // refactor
-            //    {
-            //        Move(0f); //
-            //    }
-            //    else //
-            //    {
-            //        Move(direction.x); //
-            //    }
-            //}
-            //else if (Mathf.Approximately(rb.position.x, maxXPos))
-            //{
-            //    if (sign == 1) //
-            //    {
-            //        Move(0f); //
-            //    }
-            //    else //
-            //    {
-            //        Move(direction.x); //
-            //    }
-            //}
-            //else //
-            //{
-            //    Move(direction.x); //
-            //}
+            SetMoveDirection(direction);           
         }
     }
 
