@@ -4,19 +4,51 @@ using UnityEngine;
 
 public class Obstacles : MonoBehaviour
 {
+    private const int glassObstacleLayer = 7, woodObstacleLayer = 8, ballLayer = 9, arrowLayer = 10, hammerLayer = 11;
+
+    [SerializeField] private float glassSlowRate, woodSlowRate;
+
     private void OnTriggerEnter(Collider other)
     {
-        if (gameObject.layer == 7)
+        if (other.gameObject.layer == ballLayer)
         {
-            //other.GetComponent<Rigidbody>().velocity += Vector3.back * 10f;
-            other.GetComponent<Rigidbody>().AddForce(Vector3.back * 2f, ForceMode.Impulse);
-            gameObject.SetActive(false);
+            if (gameObject.layer == glassObstacleLayer)
+            {
+                //other.GetComponent<Rigidbody>().velocity += Vector3.back * 10f;
+                other.GetComponent<Rigidbody>().AddForce(Vector3.back * glassSlowRate, ForceMode.Impulse);
+                gameObject.SetActive(false);
+            }
+            if (gameObject.layer == woodObstacleLayer)
+            {
+                //other.GetComponent<Rigidbody>().velocity += Vector3.back * 50f;
+                other.GetComponent<Rigidbody>().AddForce(Vector3.back * woodSlowRate, ForceMode.Impulse);
+                gameObject.SetActive(false);
+            }
         }
-        if (gameObject.layer == 8)
+        else if (other.gameObject.layer == arrowLayer)
         {
-            //other.GetComponent<Rigidbody>().velocity += Vector3.back * 50f;
-            other.GetComponent<Rigidbody>().AddForce(Vector3.back * 10f, ForceMode.Impulse);
-            gameObject.SetActive(false);
+            if (gameObject.layer == glassObstacleLayer)
+            {
+                gameObject.SetActive(false);
+            }
+            if (gameObject.layer == woodObstacleLayer)
+            {
+                other.gameObject.SetActive(false);
+            }
+        }
+        else if (other.gameObject.layer == hammerLayer)
+        {
+            // if hammer has its unique power on, don't apply any of the slow effects
+            if (gameObject.layer == glassObstacleLayer)
+            {
+                other.GetComponent<Rigidbody>().AddForce(Vector3.back * glassSlowRate, ForceMode.Impulse);
+                gameObject.SetActive(false);
+            }
+            if (gameObject.layer == woodObstacleLayer)
+            {
+                other.GetComponent<Rigidbody>().AddForce(Vector3.back * woodSlowRate, ForceMode.Impulse);
+                gameObject.SetActive(false);
+            }
         }
     }
 }

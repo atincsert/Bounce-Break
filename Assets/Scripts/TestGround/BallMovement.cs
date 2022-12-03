@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BallMoveForward : MonoBehaviour
+public class BallMovement : MonoBehaviour
 {
     public static event Action OnWaterTouch;
 

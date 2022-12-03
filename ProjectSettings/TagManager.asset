@@ -14,9 +14,9 @@ TagManager:
   - Platform
   - ObstacleGlass
   - ObstacleWall
-  - 
-  - 
-  - 
+  - Ball
+  - Arrow
+  - Hammer
   - 
   - 
   - 

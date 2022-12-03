@@ -7,12 +7,12 @@ public class GameManager : MonoBehaviour
 {
     private void OnEnable()
     {
-        BallMoveForward.OnWaterTouch += Restart;
+        BallMovement.OnWaterTouch += Restart;
     }
 
     private void OnDisable()
     {
-        BallMoveForward.OnWaterTouch -= Restart;
+        BallMovement.OnWaterTouch -= Restart;
     }
 
     private void Restart()
