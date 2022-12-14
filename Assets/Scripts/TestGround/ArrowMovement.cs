@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ArrowMovement : MonoBehaviour, IRestrictable
 {
+    public static Action OnArrowDeath;
+
     [SerializeField] private float speed = 0.5f;
     [SerializeField] private float forwardSpeed;
     [SerializeField] private float minPosChangeInXViaTouch, maxPosChangeInXViaTouch;

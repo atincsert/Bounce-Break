@@ -1,13 +1,19 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class HammerMover : MonoBehaviour, IRestrictable
 {
+    public static Action OnHammerDeath; 
+
     [SerializeField] private float speed = 0.5f;
     [SerializeField] private float forwardSpeed;
     [SerializeField] private float minPosChangeInXViaTouch, maxPosChangeInXViaTouch;
     [SerializeField] private float minPosChangeInYViaTouch, maxPosChangeInYViaTouch;
+    [SerializeField] private float minAllowedBreakSpeed;
+    
+    [SerializeField] private Pickup[] lightningPickups;
 
     private bool isTouching = false;
     private Vector2 pointA;
@@ -17,11 +23,30 @@ public class HammerMover : MonoBehaviour, IRestrictable
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        lightningPickups = FindObjectsOfType<Pickup>();
     }
 
     private void Start()
     {
         rb.AddForce(Vector3.forward * forwardSpeed, ForceMode.Impulse);
+    }
+
+    private void OnEnable()
+    {
+        // activate lightning pickups
+        foreach (Pickup lightningPickup in lightningPickups)
+        {
+            lightningPickup.gameObject.SetActive(true);
+        }
+    }
+
+    private void OnDisable()
+    {
+        // deactivate lightning pickups
+        foreach (Pickup lightningPickup in lightningPickups)
+        {
+            lightningPickup.gameObject.SetActive(false);
+        }
     }
 
     private void Update()
@@ -46,6 +71,8 @@ public class HammerMover : MonoBehaviour, IRestrictable
 
     private void FixedUpdate()
     {
+        Breakable();
+
         if (isTouching)
         {
             Vector2 offset = pointB - pointA;
@@ -61,7 +88,7 @@ public class HammerMover : MonoBehaviour, IRestrictable
 
     private void Move(Vector2 direction)
     {
-        //transform.Translate(direction * speed * Time.deltaTime);
+        transform.Translate(direction * speed * Time.deltaTime);
         Vector3 newVel = rb.velocity;
         newVel = new Vector3(direction.x * speed, direction.y * speed, rb.velocity.z);
         rb.velocity = newVel;
@@ -73,5 +100,17 @@ public class HammerMover : MonoBehaviour, IRestrictable
         float yClampedPos = Mathf.Clamp(rb.position.y, minPosChangeInYViaTouch, maxPosChangeInYViaTouch);
 
         rb.position = new Vector3(xClampedPos, yClampedPos, transform.position.z);
+    }
+
+    public bool Breakable()
+    {
+        if (rb.velocity.z >= minAllowedBreakSpeed)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

@@ -8,6 +8,20 @@ public class Obstacles : MonoBehaviour
 
     [SerializeField] private float glassSlowRate, woodSlowRate;
 
+    private PointSystem pointSystem;
+    private float currentZPos;
+
+    private void Awake()
+    {
+        pointSystem = FindObjectOfType<PointSystem>();
+    }
+
+    private void Start()
+    {
+        currentZPos = transform.position.z;
+    }
+
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == ballLayer)
@@ -15,7 +29,7 @@ public class Obstacles : MonoBehaviour
             if (gameObject.layer == glassObstacleLayer)
             {
                 //other.GetComponent<Rigidbody>().velocity += Vector3.back * 10f;
-                other.GetComponent<Rigidbody>().AddForce(Vector3.back * glassSlowRate, ForceMode.Impulse);
+                other.GetComponent<Rigidbody>().AddForce(Vector3.back * glassSlowRate, ForceMode.Impulse);                
                 gameObject.SetActive(false);
             }
             if (gameObject.layer == woodObstacleLayer)
@@ -24,6 +38,8 @@ public class Obstacles : MonoBehaviour
                 other.GetComponent<Rigidbody>().AddForce(Vector3.back * woodSlowRate, ForceMode.Impulse);
                 gameObject.SetActive(false);
             }
+
+            pointSystem.endZPos = currentZPos;
         }
         else if (other.gameObject.layer == arrowLayer)
         {
@@ -34,7 +50,10 @@ public class Obstacles : MonoBehaviour
             if (gameObject.layer == woodObstacleLayer)
             {
                 other.gameObject.SetActive(false);
+                pointSystem.endZPos = currentZPos;
+                ArrowMovement.OnArrowDeath?.Invoke();
             }
+
         }
         else if (other.gameObject.layer == hammerLayer)
         {
@@ -46,9 +65,16 @@ public class Obstacles : MonoBehaviour
             }
             if (gameObject.layer == woodObstacleLayer)
             {
+                if (other.GetComponent<HammerMover>().Breakable() == false)
+                {
+                    HammerMover.OnHammerDeath?.Invoke();
+                    other.gameObject.SetActive(false);
+                }
                 other.GetComponent<Rigidbody>().AddForce(Vector3.back * woodSlowRate, ForceMode.Impulse);
                 gameObject.SetActive(false);
             }
+
+            pointSystem.endZPos = currentZPos;
         }
     }
 }
