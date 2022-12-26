@@ -7,6 +7,7 @@ public class PointSystem : MonoBehaviour
 {
     public static Action OnFirstThresholdPassed;
     public static Action OnSecondThresholdPassed;
+    public static Action OnDisplayPoint;
 
     [SerializeField] private float startZPos;
     [SerializeField] private float firstThreshold;
@@ -14,12 +15,14 @@ public class PointSystem : MonoBehaviour
 
     [HideInInspector] public float endZPos;
     private float point = 0;
+    public float Point { get => point; private set => point = value; }
     private float distanceTraveled;
     // Point is calculated according to distance traveled
     private void OnEnable()
     {
         ArrowMovement.OnArrowDeath += DisplayPoint;
         HammerMover.OnHammerDeath += DisplayPoint;
+        BallMovement.OnWaterTouch += DisplayPoint;
     }
 
     private void Update()
@@ -35,10 +38,9 @@ public class PointSystem : MonoBehaviour
     private void DisplayPoint()
     {
         CalculatePoint();
+        OnDisplayPoint?.Invoke();
 
         point = distanceTraveled * 10f;
-        // display point in UI
-        Debug.Log($"You got { point } points");
     }
 
     private void CheckForThreshold()
@@ -52,5 +54,4 @@ public class PointSystem : MonoBehaviour
             OnSecondThresholdPassed?.Invoke();
         }
     }
-
 }

@@ -5,13 +5,16 @@ using UnityEngine;
 
 public class BallMovement : MonoBehaviour
 {
-    public static event Action OnWaterTouch;
+    public static Action OnWaterTouch;
 
     [SerializeField] private float forwardSpeed;
-   
+    [SerializeField] private Vector3 specialDownspeedValues = new Vector3(0f, -100f, 10f);
+    [SerializeField] private Vector3 specialUpSpeedValues = new Vector3(0f, 50f, 10f);
+    [SerializeField] private float velocityThreshold;
+
     private Rigidbody rb;
     private Vector3 downVelocity;
-    private Vector3 specialDownspeedValues = new Vector3(0, -100f, 10f);
+    private Vector3 upVelocity;
 
     private void Awake()
     {
@@ -26,6 +29,7 @@ public class BallMovement : MonoBehaviour
     private void FixedUpdate()
     {
         SpeedUpDownwardsWhenHoldTouch();
+        CheckForVelocityReduceDownForce();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -37,7 +41,7 @@ public class BallMovement : MonoBehaviour
         }
         if (collision.gameObject.layer == 6)
         {
-            rb.velocity += Vector3.up;
+            rb.velocity += Vector3.up;            
         }               
     }
 
@@ -51,5 +55,18 @@ public class BallMovement : MonoBehaviour
         }
 
         downVelocity = rb.velocity;
+    }
+
+    private void CheckForVelocityReduceDownForce()
+    {
+        upVelocity = rb.velocity;
+        if (upVelocity.y > velocityThreshold)
+        {
+            upVelocity -= specialUpSpeedValues * Time.deltaTime;
+        }
+        else
+            upVelocity = rb.velocity;
+
+        rb.velocity = upVelocity;
     }
 }

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +18,16 @@ public class UnlockingOtherWeapons : MonoBehaviour
     [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private GameObject hammerPrefab;
 
+    private SaveManager saveManager;
+
+    private void Awake()
+    {
+        saveManager = FindObjectOfType<SaveManager>(true);
+        ballPrefab = FindObjectOfType<BallMovement>(true).gameObject;
+        arrowPrefab = FindObjectOfType<ArrowMovement>(true).gameObject;
+        hammerPrefab = FindObjectOfType<HammerMover>(true).gameObject;
+    }
+
     private void OnEnable()
     {
         PointSystem.OnFirstThresholdPassed += UnlockArrow;
@@ -28,40 +36,71 @@ public class UnlockingOtherWeapons : MonoBehaviour
 
     private void UnlockArrow()
     {
-        OnArrowUnlock?.Invoke();
         ballButton.interactable = true;
-        arrowButton.interactable = true;       
+        arrowButton.interactable = true;
+        if (saveManager.UnlockedGameObject != null)
+        {
+            saveManager.UnlockedGameObject = arrowPrefab;
+        }
+        saveManager.SelectedGameObject = arrowPrefab;
+        OnArrowUnlock?.Invoke();
     }
 
     private void UnlockHammer()
     {
-        OnHammerUnlock?.Invoke();
         ballButton.interactable = true;
         arrowButton.interactable = true;
         hammerButton.interactable = true;
+        if (saveManager.UnlockedGameObject != null)
+        {
+            saveManager.UnlockedGameObject = hammerPrefab;
+        }
+        saveManager.SelectedGameObject = hammerPrefab;
+        OnHammerUnlock?.Invoke();
     }
 
     public void DisplayBall()
     {
-        OnBallPrefabSelected?.Invoke();
         ballPrefab.SetActive(true);
         arrowPrefab.SetActive(false);
         hammerPrefab.SetActive(false);
+        saveManager.SelectedGameObject = ballPrefab;
+        OnBallPrefabSelected?.Invoke();
     }
 
     public void DisplayArrow()
     {
-        OnArrowPrefabSelected?.Invoke();
         ballPrefab.SetActive(false);
         arrowPrefab.SetActive(true);
         hammerPrefab.SetActive(false);
+        saveManager.SelectedGameObject = arrowPrefab;
+        OnArrowPrefabSelected?.Invoke();
+        UnlockArrow();
     }
 
     public void DisplayHammer()
     {
-        OnHammerPrefabSelected?.Invoke();
         ballPrefab.SetActive(false);
         arrowPrefab.SetActive(false);
         hammerPrefab.SetActive(true);
+        saveManager.SelectedGameObject = hammerPrefab;
+        OnHammerPrefabSelected?.Invoke();
+        UnlockHammer();
+    }
+
+    public void DisplayItemByName(string gameObjectname)
+    {
+        if (gameObjectname == hammerPrefab.name)
+        {
+            DisplayHammer();
+        }
+        else if (gameObjectname == arrowPrefab.name)
+        {
+            DisplayArrow();
+        }
+        else if (gameObjectname == ballPrefab.name)
+        {
+            DisplayBall();
+        }
     }
 }

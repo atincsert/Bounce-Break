@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 public class Obstacles : MonoBehaviour
 {
@@ -21,7 +22,6 @@ public class Obstacles : MonoBehaviour
         currentZPos = transform.position.z;
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.layer == ballLayer)
@@ -35,11 +35,10 @@ public class Obstacles : MonoBehaviour
             if (gameObject.layer == woodObstacleLayer)
             {
                 //other.GetComponent<Rigidbody>().velocity += Vector3.back * 50f;
-                other.GetComponent<Rigidbody>().AddForce(Vector3.back * woodSlowRate, ForceMode.Impulse);
-                gameObject.SetActive(false);
+                pointSystem.endZPos = currentZPos;
+                other.gameObject.SetActive(false);
+                BallMovement.OnWaterTouch?.Invoke();
             }
-
-            pointSystem.endZPos = currentZPos;
         }
         else if (other.gameObject.layer == arrowLayer)
         {
@@ -49,14 +48,18 @@ public class Obstacles : MonoBehaviour
             }
             if (gameObject.layer == woodObstacleLayer)
             {
-                other.gameObject.SetActive(false);
                 pointSystem.endZPos = currentZPos;
+                other.gameObject.SetActive(false);
                 ArrowMovement.OnArrowDeath?.Invoke();
             }
-
         }
         else if (other.gameObject.layer == hammerLayer)
         {
+            if (FindObjectOfType<Pickup>().HasEffect == true)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
             // if hammer has its unique power on, don't apply any of the slow effects
             if (gameObject.layer == glassObstacleLayer)
             {
@@ -67,14 +70,14 @@ public class Obstacles : MonoBehaviour
             {
                 if (other.GetComponent<HammerMover>().Breakable() == false)
                 {
-                    HammerMover.OnHammerDeath?.Invoke();
+                    pointSystem.endZPos = currentZPos;
                     other.gameObject.SetActive(false);
+                    HammerMover.OnHammerDeath?.Invoke();
                 }
                 other.GetComponent<Rigidbody>().AddForce(Vector3.back * woodSlowRate, ForceMode.Impulse);
                 gameObject.SetActive(false);
             }
 
-            pointSystem.endZPos = currentZPos;
         }
     }
 }

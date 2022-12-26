@@ -5,39 +5,57 @@ using Cinemachine;
 
 public class ChangeCameraPriority : MonoBehaviour
 {
-    [SerializeField] private CinemachineVirtualCamera ballCamera;
-    [SerializeField] private CinemachineVirtualCamera arrowCamera;
-    [SerializeField] private CinemachineVirtualCamera hammerCamera;
+    public CinemachineVirtualCamera ballCamera;
+    public CinemachineVirtualCamera arrowCamera;
+    public CinemachineVirtualCamera hammerCamera;
 
-    private bool isBallCamera = true;
+    public GameObject ball;
+    public GameObject arrow;
+    public GameObject hammer;
 
-    private void Start()
+    bool ballOnScreen;
+    bool arrowOnScreen;
+    bool hammerOnScreen;
+
+    void Update()
     {
-        ballCamera.Priority = 1;
-        // if arrow / hammer is selected change the priority here
-    }
+        // Check if the ball, arrow, or hammer is active and on screen
+        ballOnScreen = ball.activeInHierarchy && IsOnScreen(ball);
+        arrowOnScreen = arrow.activeInHierarchy && IsOnScreen(arrow);
+        hammerOnScreen = hammer.activeInHierarchy && IsOnScreen(hammer);
 
-    private void SwitchPriority()
-    {
-        if (ballCamera.Priority == 1)
+        // Set the camera priorities based on which object is on screen
+        if (ballOnScreen)
         {
+            ballCamera.Priority = 10;
             arrowCamera.Priority = 0;
             hammerCamera.Priority = 0;
         }
-        else 
+        else if (arrowOnScreen)
         {
-            if (arrowCamera.Priority == 1)
-            {
-                ballCamera.Priority = 0;
-                hammerCamera.Priority = 0;
-            }
-            if (hammerCamera.Priority == 1)
-            {
-                ballCamera.Priority = 0;
-                arrowCamera.Priority = 0;
-            }
+            ballCamera.Priority = 0;
+            arrowCamera.Priority = 10;
+            hammerCamera.Priority = 0;
+        }
+        else if (hammerOnScreen)
+        {
+            ballCamera.Priority = 0;
+            arrowCamera.Priority = 0;
+            hammerCamera.Priority = 10;
+        }
+    }
+
+    bool IsOnScreen(GameObject obj)
+    {
+        Renderer renderer = obj.GetComponent<Renderer>();
+        if (renderer == null)
+        {
+            Debug.Log($"renderer is null");
+            return false;
         }
 
-        isBallCamera = false;
+        Debug.Log($"renderer is visible");
+        return renderer.isVisible;
     }
 }
+

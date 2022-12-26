@@ -64,7 +64,6 @@ public class ArrowMovement : MonoBehaviour, IRestrictable
 
     private void Move(Vector2 direction)
     {
-        //transform.Translate(direction * speed * Time.deltaTime);
         Vector3 newVel = rb.velocity;
         newVel = new Vector3(direction.x * speed, direction.y * speed, rb.velocity.z);
         rb.velocity = newVel;
