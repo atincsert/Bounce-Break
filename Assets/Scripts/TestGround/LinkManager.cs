@@ -5,38 +5,41 @@ using UnityEngine;
 public class LinkManager : MonoBehaviour
 {
     [SerializeField] private GameObject hammer;
-    [SerializeField] private GameObject[] lightningPickups;
+    [SerializeField] private Pickup[] lightningPickups;
     [SerializeField] private GameObject ball;
-    [SerializeField] private GameObject[] ballunrelatedplatforms;
+    [SerializeField] private Obstacles[] ballunrelatedplatforms;
 
     private void Awake()
     {
+        lightningPickups = FindObjectsOfType<Pickup>();
+        ballunrelatedplatforms = FindObjectsOfType<Obstacles>();
+
         if (hammer.activeInHierarchy)
         {
-            foreach (GameObject lightningPickup in lightningPickups)
+            foreach (Pickup lightningPickup in lightningPickups)
             {
-                lightningPickup.SetActive(true);
+                lightningPickup.gameObject.SetActive(true);
             }
         }
         if(!hammer.activeInHierarchy)
         {
-            foreach (GameObject lightningPickup in lightningPickups)
+            foreach (Pickup lightningPickup in lightningPickups)
             {
-                lightningPickup.SetActive(false);
+                lightningPickup.gameObject.SetActive(false);
             }
         }
-        if (ball.activeInHierarchy)
+        if (!ball.activeInHierarchy)
         {
-            foreach (GameObject platform in ballunrelatedplatforms)
+            foreach (Obstacles platform in ballunrelatedplatforms)
             {
-                platform.SetActive(true);
+                platform.gameObject.SetActive(true);
             }
         }
         if(ball.activeInHierarchy)
         {
-            foreach (GameObject platform in ballunrelatedplatforms)
+            foreach (Obstacles platform in ballunrelatedplatforms)
             {
-                platform.SetActive(false);
+                platform.gameObject.SetActive(false);
             }
         }
     }

@@ -12,16 +12,19 @@ public class Pickup : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        HasteEffect(other);
+        StartCoroutine(HasteEffect(other));
+        gameObject.GetComponent<MeshRenderer>().enabled = false;
     }
 
     private IEnumerator HasteEffect(Collider other)
     {
         var hammer = other.GetComponent<Rigidbody>();
-        hammer.velocity += Vector3.forward * lightningSpeedValue;
+        hammer.velocity = Vector3.forward * lightningSpeedValue;
         hasEffect = true;
+        Debug.Log($"{ hammer.velocity }");
         yield return new WaitForSeconds(lightningPowerTimeLimit);
         hammer.velocity -= Vector3.forward * lightningSpeedValue;
         hasEffect = false;
+        Debug.Log($"{ hammer.velocity }");
     }
 }

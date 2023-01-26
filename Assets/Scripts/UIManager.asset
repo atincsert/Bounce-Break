@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d22bf775f53aa14183d91abf95115b8, type: 3}
+  m_Name: UIManager
+  m_EditorClassIdentifier: 
+  canvas: {fileID: 626848084798281797, guid: 9561f99bab053a54f92cb51b8a93ec88, type: 3}
+  menuPanel: {fileID: 508288191941921654, guid: 87a95a0c3a759154cb089fa5c1ac610c, type: 3}
+  playerPanel: {fileID: 133169429231892967, guid: 1b1f47c4e7e796e4e98e8781e5c36638, type: 3}
+  gameOverPanel: {fileID: 5999433304345796319, guid: ace370d3f19dbf548827de29d79ec55f, type: 3}
+  pointCount: {fileID: 5799284149687407691, guid: 08ddec5d7ad113a46aa3f8350903e999, type: 3}
+  startButton: {fileID: 2208246788238075258, guid: d6dc418482a2a934dae774917efd087e, type: 3}
+  playerSelectionButton: {fileID: 158411540803813044, guid: 5b98512d55d4ce1458fbaf7fb94c914c, type: 3}
+  ballSelectionButton: {fileID: 1341559300877796802, guid: a38ebb437c166fe4482054fdc6326a26, type: 3}
+  arrowSelectionButton: {fileID: 7011222054956818788, guid: 3a78cba38f4728b4db00f32f3ddf8014, type: 3}
+  hammerSelectionButton: {fileID: 8979985703940593994, guid: 1b20d76de35739640bd78967b4968432, type: 3}
+  menuButton: {fileID: 3227293988074094077, guid: 94674d58ca2c52e48935bf8c2e0d08e2, type: 3}
+  backButton: {fileID: 8919817855280012201, guid: d0629e32808a9f54ca2e2bdebacd29ed, type: 3}

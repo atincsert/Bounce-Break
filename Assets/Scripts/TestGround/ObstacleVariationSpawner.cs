@@ -14,10 +14,18 @@ public class ObstacleVariationSpawner : MonoBehaviour
 
     private void Update()
     {
-        if (!creatingSection)
+        if (!GameManager.IsGameRunning)
         {
-            creatingSection = true;
-            StartCoroutine(GenerateSection());
+            return;
+        }
+        else
+        {
+            if (!creatingSection)
+            {
+                creatingSection = true;
+
+                StartCoroutine(GenerateSection());
+            }
         }
     }
 

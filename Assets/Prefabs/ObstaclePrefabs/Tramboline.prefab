@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 140983325533827908}
   - component: {fileID: 140983325533827907}
   - component: {fileID: 140983325533827910}
+  - component: {fileID: 9056293020278972067}
   m_Layer: 6
   m_Name: Tramboline
   m_TagString: Untagged
@@ -97,3 +98,15 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.6777281, y: 2, z: 0.77663225}
   m_Center: {x: 0.0079068905, y: 0, z: -0.011991143}
+--- !u!114 &9056293020278972067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140983325533827905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8d4b2345ab98454092a3a19946c291f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

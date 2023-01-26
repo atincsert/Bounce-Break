@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PointSystem : MonoBehaviour
@@ -13,21 +11,14 @@ public class PointSystem : MonoBehaviour
     [SerializeField] private float firstThreshold;
     [SerializeField] private float secondThreshold;
 
-    [HideInInspector] public float endZPos;
+    [HideInInspector] public static float endZPos;
     private float point = 0;
-    public float Point { get => point; private set => point = value; }
+    public float Point { get => (int)point; private set => point = value; }
     private float distanceTraveled;
     // Point is calculated according to distance traveled
     private void OnEnable()
     {
-        ArrowMovement.OnArrowDeath += DisplayPoint;
-        HammerMover.OnHammerDeath += DisplayPoint;
-        BallMovement.OnWaterTouch += DisplayPoint;
-    }
-
-    private void Update()
-    {
-        CheckForThreshold();
+        UIManager.OnGameOverPanelShown += DisplayPoint;
     }
 
     private void CalculatePoint()
@@ -38,19 +29,21 @@ public class PointSystem : MonoBehaviour
     private void DisplayPoint()
     {
         CalculatePoint();
-        OnDisplayPoint?.Invoke();
-
         point = distanceTraveled * 10f;
+        CheckForThreshold();
+        OnDisplayPoint?.Invoke();
     }
 
     private void CheckForThreshold()
     {
         if (point >= firstThreshold)
         {
+            Debug.Log($"calling first threshold passed event");
             OnFirstThresholdPassed?.Invoke();
         }
         if (point >= secondThreshold)
         {
+            Debug.Log($"calling second threshold passed event");
             OnSecondThresholdPassed?.Invoke();
         }
     }

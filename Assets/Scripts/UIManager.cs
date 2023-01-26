@@ -1,18 +1,16 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    public static Action OnBallSelected;
-    public static Action OnArrowSelected;
-    public static Action OnHammerSelected;
-    public static Action OnStartPressed;
+    public static Action<Weapon> OnWeaponSelected;
+    public static Action OnStartButtonPressed;
+    public static Action OnPlayerDie;
+    public static Action OnGameOverPanelShown;
 
     [SerializeField] private Canvas canvas;
     [SerializeField] private Image menuPanel;
@@ -40,7 +38,7 @@ public class UIManager : MonoBehaviour
         else if (Instance != null && Instance != this)
         {
             DestroyImmediate(gameObject);
-            Destroy(canvas.gameObject);
+            DestroyImmediate(canvas.gameObject);
             return;
         }
 
@@ -54,10 +52,46 @@ public class UIManager : MonoBehaviour
         point = FindObjectOfType<PointSystem>(true);
     }
 
+    #region COMMENT
+    //private void Awake()
+    //{
+    //    if (Instance == null)
+    //    {
+    //        Instance = this;
+    //    }
+    //    else if (Instance != null && Instance != this)
+    //    {
+    //        DestroyImmediate(gameObject);
+    //        return;
+    //    }
+    //}
+
+    //private void Start()
+    //{
+    //    canvas = FindObjectOfType<Canvas>(true);
+    //    menuPanel = canvas.transform.Find("MenuPanel").GetComponent<Image>();
+    //    playerPanel = canvas.transform.Find("PlayerPanel").GetComponent<Image>();
+    //    gameOverPanel = canvas.transform.Find("GameOverPanel").GetComponent<Image>();
+    //    pointCount = canvas.transform.Find("PointsText").GetComponent<TextMeshProUGUI>();
+    //    startButton = canvas.transform.Find("StartButton").GetComponent<Button>();
+    //    playerSelectionButton = canvas.transform.Find("PlayerButton").GetComponent<Button>();
+    //    ballSelectionButton = canvas.transform.Find("BallSelectionButton").GetComponent<Button>();
+    //    arrowSelectionButton = canvas.transform.Find("ArrowSelectionButton").GetComponent<Button>();
+    //    hammerSelectionButton = canvas.transform.Find("HammerSelectionButton").GetComponent<Button>();
+    //    menuButton = canvas.transform.Find("MainMenuButton").GetComponent<Button>();
+    //    backButton = canvas.transform.Find("BackButton").GetComponent<Button>();
+    //    point = FindObjectOfType<PointSystem>();
+
+    //    menuPanel.gameObject.SetActive(true);
+    //    gameOverPanel.gameObject.SetActive(false);
+    //    playerPanel.gameObject.SetActive(false);
+    //}
+    #endregion
+
     private void OnEnable()
     {
         PointSystem.OnDisplayPoint += UpdatePointsUI;
-        BallMovement.OnWaterTouch += OpenGameOverPanel;
+        BallMovement.OnDrown += OpenGameOverPanel;
         ArrowMovement.OnArrowDeath += OpenGameOverPanel;
         HammerMover.OnHammerDeath += OpenGameOverPanel;
     }
@@ -65,27 +99,39 @@ public class UIManager : MonoBehaviour
     // OnClickEvent
     public void OpenPlayerPanel()
     {
-        Debug.Log($"PlayerPanel");
+        GameManager.IsGameRunning = false;
         playerPanel.gameObject.SetActive(true);
         menuPanel.gameObject.SetActive(false);
         gameOverPanel.gameObject.SetActive(false);
+        SetSelectionButtonsInteractability();
     }
 
     // OnClickEvents
     public void SelectBall()
     {
-        OnBallSelected?.Invoke();
-        Debug.Log($"Ball is selected");
+        GameManager.IsGameRunning = false;
+        SaveManager.SetChoosenWeapon(SaveManager.Weapon.Ball);
+        //OnWeaponSelected?.Invoke(Weapon.Ball);
     }
 
-    public void SelectArrow() => OnArrowSelected?.Invoke();
+    public void SelectArrow()
+    {
+        GameManager.IsGameRunning = false;
+        SaveManager.SetChoosenWeapon(SaveManager.Weapon.Arrow);
+        //OnWeaponSelected?.Invoke(Weapon.Arrow);
+    }
 
-    public void SelectHammer() => OnHammerSelected?.Invoke();
+    public void SelectHammer()
+    {
+        GameManager.IsGameRunning = false;
+        SaveManager.SetChoosenWeapon(SaveManager.Weapon.Hammer);
+        //OnWeaponSelected?.Invoke(Weapon.Hammer);
+    }
 
     // OnClickEvent
     public void GoBack()
     {
-        Debug.Log($"Back");
+        GameManager.IsGameRunning = false;
         menuPanel.gameObject.SetActive(true);
         gameOverPanel.gameObject.SetActive(false);
         playerPanel.gameObject.SetActive(false);
@@ -93,28 +139,31 @@ public class UIManager : MonoBehaviour
 
     private void OpenGameOverPanel()
     {
+        GameManager.IsGameRunning = false;
         Debug.Log($"GameOver");
         // When you died
         gameOverPanel.gameObject.SetActive(true);
         menuPanel.gameObject.SetActive(false);
         playerPanel.gameObject.SetActive(false);
+        OnGameOverPanelShown?.Invoke();
+        OnPlayerDie?.Invoke();
     }
 
     // OnClickEvent
     public void OpenMenuPanel()
     {
-        Debug.Log($"MenuPanel");
+        GameManager.IsGameRunning = false;
         menuPanel.gameObject.SetActive(true);
         gameOverPanel.gameObject.SetActive(false);
         playerPanel.gameObject.SetActive(false);
+        SetSelectionButtonsInteractability();
     }
 
     // OnClickEvent
     public void StartGame()
     {
         // Load the game scene
-        OnStartPressed?.Invoke();
-        Debug.Log($"GameStart");
+        OnStartButtonPressed?.Invoke();
         menuPanel.gameObject.SetActive(false);
         gameOverPanel.gameObject.SetActive(false);
         playerPanel.gameObject.SetActive(false);
@@ -123,10 +172,23 @@ public class UIManager : MonoBehaviour
 
     private void UpdatePointsUI()
     {
-        //UnityEngine.SceneManagement.SceneManager.LoadScene(0);
-        if (pointCount != null)
-        {
-            pointCount.text = $"Points : {point.Point}";
-        }
+        GameManager.IsGameRunning = false;
+        //if (pointCount != null)
+        //{
+        pointCount.text = $"Points : {point.Point}";
+        //}
+    }
+
+    private void SetSelectionButtonsInteractability()
+    {
+        arrowSelectionButton.interactable = SaveManager.IsArrowUnlocked;
+        hammerSelectionButton.interactable = SaveManager.IsHammerUnlocked;
+    }
+
+    public enum Weapon
+    {
+        Ball,
+        Arrow,
+        Hammer
     }
 }

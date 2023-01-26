@@ -47,14 +47,14 @@ public class ChangeCameraPriority : MonoBehaviour
 
     bool IsOnScreen(GameObject obj)
     {
-        Renderer renderer = obj.GetComponent<Renderer>();
+        MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
+        
         if (renderer == null)
         {
             Debug.Log($"renderer is null");
             return false;
         }
 
-        Debug.Log($"renderer is visible");
         return renderer.isVisible;
     }
 }

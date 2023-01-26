@@ -97,6 +97,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a89437424c9665b4ea1139c2c2f78dab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lightningSpeedValue: 10
+  lightningPowerTimeLimit: 5
 --- !u!135 &4767119078681681591
 SphereCollider:
   m_ObjectHideFlags: 0
