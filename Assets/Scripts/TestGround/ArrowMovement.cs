@@ -3,22 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ArrowMovement : MonoBehaviour, IRestrictable
+public class ArrowMovement : MonoBehaviour, IPlayerMover
 {
-    public static Action OnArrowDeath;
+    public static Action OnTrambolineCollision;
 
-    [SerializeField] private float speed = 0.5f;
     [SerializeField] private float forwardSpeed;
-    [SerializeField] private float minPosChangeInXViaTouch, maxPosChangeInXViaTouch;
-    [SerializeField] private float minPosChangeInYViaTouch, maxPosChangeInYViaTouch;
- 
+    [SerializeField] private Vector3 specialDownspeedValues = new Vector3(0f, -100f, 10f);
+    [SerializeField] private Vector3 specialUpSpeedValues = new Vector3(0f, 50f, 10f);
+    [SerializeField] private float velocityThreshold;
+    [SerializeField] private float minForwardSpeed, maxForwardSpeed;
 
-    private bool isTouching = false;
-    private Vector2 pointA;
-    private Vector2 pointB;
     private Rigidbody rb;
-    private Vector2 mouseButtonUpPos;
-    private Vector2 mousePos;
+    private Vector3 downVelocity;
+    private Vector3 upVelocity;
 
     private void Awake()
     {
@@ -27,110 +24,70 @@ public class ArrowMovement : MonoBehaviour, IRestrictable
 
     private void Start()
     {
-        forwardSpeed = 5f;
-        rb.velocity = Vector3.forward * forwardSpeed;
-        //rb.AddForce(Vector3.forward * forwardSpeed, ForceMode.Impulse);
+        rb.AddForce(Vector3.forward * forwardSpeed, ForceMode.Impulse);
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        RestrictPosition();
-        UpdateSpeed(forwardSpeed);
+        OnTrambolineCollision += BounceConditions;
+    }
 
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    pointA = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.z));           
-        //}
-        if (Input.GetMouseButton(0))
-        {
-            isTouching = true;
-            mousePos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            //pointB = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, Camera.main.transform.position.z));
-            pointA = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, Camera.main.transform.position.z)); // new line
-        }
-        else
-        {
-            var lastMousePos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            pointB = Camera.main.ScreenToWorldPoint(new Vector3(lastMousePos.x, lastMousePos.y, Camera.main.transform.position.z)); // new line 
-            isTouching = false;
-        }
+    private void OnDisable()
+    {
+        OnTrambolineCollision -= BounceConditions;
     }
 
     private void FixedUpdate()
     {
-        if (isTouching)
+        SpeedUp();
+        SpeedUpDownwardsWhenHoldTouch();
+        RestrictMaxHeight();
+    }
+
+    private void SpeedUpDownwardsWhenHoldTouch()
+    {
+        if (Input.GetMouseButton(0))
         {
-            Vector2 direction = (mousePos - (Vector2)transform.position).normalized;
-            rb.velocity = new Vector3(direction.x * speed, direction.y * speed, /*rb.velocity.z*/forwardSpeed);
-            //Move(direction);
+            downVelocity = rb.velocity;
+            downVelocity += specialDownspeedValues * Time.deltaTime;
+            rb.velocity = downVelocity;
+        }
+
+        downVelocity = rb.velocity;
+    }
+
+    private void CheckForUpwardVelocityIncreaseDownForce()
+    {
+        upVelocity = rb.velocity;
+        if (upVelocity.y > velocityThreshold)
+        {
+            upVelocity -= specialUpSpeedValues * Time.deltaTime;
         }
         else
-        {
-            Vector3 stopVerticallyAndHorizontally = new Vector3(0, 0, /*rb.velocity.z*/forwardSpeed);
-            rb.velocity = stopVerticallyAndHorizontally;
-            //Move(stopVerticallyAndHorizontally);
-        }
+            upVelocity = rb.velocity;
+
+        rb.velocity = upVelocity;
     }
 
-
-    //private void FixedUpdate()
-    //{
-    //    if (isTouching)
-    //    {
-    //        Vector2 offset = pointB - pointA;
-    //        Vector2 direction = Vector2.ClampMagnitude(offset, 1f);
-    //        Move(direction * -1);
-    //    }
-    //    else
-    //    {
-    //        //New Line
-    //        if (Input.GetMouseButtonUp(0))
-    //            mouseButtonUpPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-
-    //        Vector3 stopVerticallyAndHorizontally = new Vector3(mouseButtonUpPos.x, mouseButtonUpPos.y, rb.velocity.z);
-    //        Move(stopVerticallyAndHorizontally);
-    //    }
-    //}
-
-    //private void Move(Vector2 direction)
-    //{
-    //    float maxDistance = 1f;
-    //    Vector2 movement = direction * speed + (Vector2)Vector3.forward * forwardSpeed;
-    //    float distance = Vector2.Distance((Vector2)transform.position, (Vector2)transform.position + movement);
-    //    if (distance > maxDistance)
-    //    {
-    //        movement = movement.normalized * maxDistance;
-    //    }
-    //    rb.velocity = movement;
-    //}
-
-    private void UpdateSpeed(float currentForwardSpeed)
+    private void Bounce()
     {
-        forwardSpeed += Time.deltaTime * 0.1f; // Increase the speed by 0.1 every second
-        forwardSpeed = Mathf.Clamp(forwardSpeed, 5, 50); // Clamp the speed between 0 and 10
+        rb.velocity += Vector3.up;
+    }
+
+    public void BounceConditions()
+    {
+        Bounce();
+    }
+
+    public void RestrictMaxHeight()
+    {
+        CheckForUpwardVelocityIncreaseDownForce();
+    }
+
+    public void SpeedUp()
+    {
+        forwardSpeed += Time.deltaTime * 0.1f;
+        forwardSpeed = Mathf.Clamp(forwardSpeed, minForwardSpeed, maxForwardSpeed);
         rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, forwardSpeed);
     }
-
-
-    public void RestrictPosition()
-    {
-        float xClampedPos = Mathf.Clamp(transform.position.x, minPosChangeInXViaTouch, maxPosChangeInXViaTouch);
-        float yClampedPos = Mathf.Clamp(transform.position.y, minPosChangeInYViaTouch, maxPosChangeInYViaTouch);
-
-        StickToEdges(xClampedPos, yClampedPos);
-        transform.position = new Vector3(xClampedPos, yClampedPos, transform.position.z);
-    }
-
-    private void StickToEdges(float clampedX, float clampedY)
-    {
-        if (transform.position.x == clampedX)
-        {
-            Mathf.Clamp(transform.position.x, minPosChangeInXViaTouch, maxPosChangeInXViaTouch);
-        }
-        if (transform.position.y == clampedY)
-        {
-            Mathf.Clamp(transform.position.y, minPosChangeInYViaTouch, maxPosChangeInYViaTouch);
-        }
-    }
-
 }

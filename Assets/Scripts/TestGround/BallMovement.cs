@@ -3,21 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BallMovement : MonoBehaviour
+public class BallMovement : MonoBehaviour, IPlayerMover
 {
-    public static Action OnWaterTouch;
-    public static Action OnPlatformCollision;
-    public static Action OnDrown;
+    public static Action OnTrambolineCollision;
 
     [SerializeField] private float forwardSpeed;
     [SerializeField] private Vector3 specialDownspeedValues = new Vector3(0f, -100f, 10f);
     [SerializeField] private Vector3 specialUpSpeedValues = new Vector3(0f, 50f, 10f);
     [SerializeField] private float velocityThreshold;
+    [SerializeField] private float minForwardSpeed, maxForwardSpeed;
 
     private Rigidbody rb;
     private Vector3 downVelocity;
     private Vector3 upVelocity;
-    [HideInInspector] public static bool hasTouchedWater;
 
     private void Awake()
     {
@@ -26,47 +24,25 @@ public class BallMovement : MonoBehaviour
 
     private void Start()
     {
-        hasTouchedWater = false;
         rb.AddForce(Vector3.forward * forwardSpeed, ForceMode.Impulse);
     }
 
     private void OnEnable()
     {
-        BallMovement.OnPlatformCollision += Bounce;
-        BallMovement.OnWaterTouch += Drown;
+        OnTrambolineCollision += BounceConditions;
     }
 
     private void OnDisable()
     {
-        BallMovement.OnPlatformCollision -= Bounce;        
-        BallMovement.OnWaterTouch -= Drown;
+        OnTrambolineCollision -= BounceConditions;
     }
 
     private void FixedUpdate()
     {
+        SpeedUp();
         SpeedUpDownwardsWhenHoldTouch();
-        CheckForVelocityReduceDownForce();
+        RestrictMaxHeight();
     }
-
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    if (collision.gameObject.layer == 4)
-    //    {
-    //        //Game Over send an event to restart of game over screen etc.
-    //        //DeathCondition();
-    //        OnWaterTouch?.Invoke();
-    //        Debug.Log($"{ collision.gameObject.name }");
-    //    }
-    //    if (collision.gameObject.layer == 6)
-    //    {
-    //        rb.velocity += Vector3.up;            
-    //    }               
-    //}
-
-    //private static void DeathCondition()
-    //{
-    //    hasTouchedWater = true;
-    //}
 
     private void SpeedUpDownwardsWhenHoldTouch()
     {
@@ -80,7 +56,7 @@ public class BallMovement : MonoBehaviour
         downVelocity = rb.velocity;
     }
 
-    private void CheckForVelocityReduceDownForce()
+    private void CheckForUpwardVelocityIncreaseDownForce()
     {
         upVelocity = rb.velocity;
         if (upVelocity.y > velocityThreshold)
@@ -98,10 +74,20 @@ public class BallMovement : MonoBehaviour
         rb.velocity += Vector3.up;
     }
 
-    private void Drown()
+    public void BounceConditions()
     {
-        PointSystem.endZPos = (int)transform.position.z;
-        BallMovement.OnDrown?.Invoke();
-        gameObject.SetActive(false);
+        Bounce();
+    }
+
+    public void RestrictMaxHeight()
+    {
+        CheckForUpwardVelocityIncreaseDownForce();
+    }
+
+    public void SpeedUp()
+    {
+        forwardSpeed += Time.deltaTime * 0.1f;
+        forwardSpeed = Mathf.Clamp(forwardSpeed, minForwardSpeed, maxForwardSpeed);
+        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, forwardSpeed);
     }
 }

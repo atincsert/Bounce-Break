@@ -12,11 +12,33 @@ public class OtherCollisionOptions : MonoBehaviour
         {
             if (gameObject.layer == platformLayer)
             {
-                BallMovement.OnPlatformCollision?.Invoke();
+                BallMovement.OnTrambolineCollision?.Invoke();
             }
             else if (gameObject.layer == waterLayer)
             {
-                BallMovement.OnWaterTouch?.Invoke();               
+                UIManager.OnPlayerDie?.Invoke();               
+            }
+        }
+        else if (collision.gameObject.layer == 10)
+        {
+            if (gameObject.layer == platformLayer)
+            {
+                ArrowMovement.OnTrambolineCollision?.Invoke();
+            }
+            else if (gameObject.layer == waterLayer)
+            {
+                UIManager.OnPlayerDie?.Invoke();
+            }
+        }
+        else if (collision.gameObject.layer == 11)
+        {
+            if (gameObject.layer == platformLayer)
+            {
+                HammerMover.OnTrambolineCollision?.Invoke();
+            }
+            else if (gameObject.layer == waterLayer)
+            {
+                UIManager.OnPlayerDie?.Invoke();
             }
         }
     }

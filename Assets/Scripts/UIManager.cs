@@ -52,48 +52,10 @@ public class UIManager : MonoBehaviour
         point = FindObjectOfType<PointSystem>(true);
     }
 
-    #region COMMENT
-    //private void Awake()
-    //{
-    //    if (Instance == null)
-    //    {
-    //        Instance = this;
-    //    }
-    //    else if (Instance != null && Instance != this)
-    //    {
-    //        DestroyImmediate(gameObject);
-    //        return;
-    //    }
-    //}
-
-    //private void Start()
-    //{
-    //    canvas = FindObjectOfType<Canvas>(true);
-    //    menuPanel = canvas.transform.Find("MenuPanel").GetComponent<Image>();
-    //    playerPanel = canvas.transform.Find("PlayerPanel").GetComponent<Image>();
-    //    gameOverPanel = canvas.transform.Find("GameOverPanel").GetComponent<Image>();
-    //    pointCount = canvas.transform.Find("PointsText").GetComponent<TextMeshProUGUI>();
-    //    startButton = canvas.transform.Find("StartButton").GetComponent<Button>();
-    //    playerSelectionButton = canvas.transform.Find("PlayerButton").GetComponent<Button>();
-    //    ballSelectionButton = canvas.transform.Find("BallSelectionButton").GetComponent<Button>();
-    //    arrowSelectionButton = canvas.transform.Find("ArrowSelectionButton").GetComponent<Button>();
-    //    hammerSelectionButton = canvas.transform.Find("HammerSelectionButton").GetComponent<Button>();
-    //    menuButton = canvas.transform.Find("MainMenuButton").GetComponent<Button>();
-    //    backButton = canvas.transform.Find("BackButton").GetComponent<Button>();
-    //    point = FindObjectOfType<PointSystem>();
-
-    //    menuPanel.gameObject.SetActive(true);
-    //    gameOverPanel.gameObject.SetActive(false);
-    //    playerPanel.gameObject.SetActive(false);
-    //}
-    #endregion
-
     private void OnEnable()
     {
         PointSystem.OnDisplayPoint += UpdatePointsUI;
-        BallMovement.OnDrown += OpenGameOverPanel;
-        ArrowMovement.OnArrowDeath += OpenGameOverPanel;
-        HammerMover.OnHammerDeath += OpenGameOverPanel;
+        UIManager.OnPlayerDie += OpenGameOverPanel;
     }
 
     // OnClickEvent
@@ -111,21 +73,18 @@ public class UIManager : MonoBehaviour
     {
         GameManager.IsGameRunning = false;
         SaveManager.SetChoosenWeapon(SaveManager.Weapon.Ball);
-        //OnWeaponSelected?.Invoke(Weapon.Ball);
     }
 
     public void SelectArrow()
     {
         GameManager.IsGameRunning = false;
         SaveManager.SetChoosenWeapon(SaveManager.Weapon.Arrow);
-        //OnWeaponSelected?.Invoke(Weapon.Arrow);
     }
 
     public void SelectHammer()
     {
         GameManager.IsGameRunning = false;
         SaveManager.SetChoosenWeapon(SaveManager.Weapon.Hammer);
-        //OnWeaponSelected?.Invoke(Weapon.Hammer);
     }
 
     // OnClickEvent
@@ -140,13 +99,11 @@ public class UIManager : MonoBehaviour
     private void OpenGameOverPanel()
     {
         GameManager.IsGameRunning = false;
-        Debug.Log($"GameOver");
-        // When you died
         gameOverPanel.gameObject.SetActive(true);
         menuPanel.gameObject.SetActive(false);
         playerPanel.gameObject.SetActive(false);
         OnGameOverPanelShown?.Invoke();
-        OnPlayerDie?.Invoke();
+        //OnPlayerDie?.Invoke(); Hakan's code
     }
 
     // OnClickEvent
@@ -162,21 +119,16 @@ public class UIManager : MonoBehaviour
     // OnClickEvent
     public void StartGame()
     {
-        // Load the game scene
         OnStartButtonPressed?.Invoke();
         menuPanel.gameObject.SetActive(false);
         gameOverPanel.gameObject.SetActive(false);
         playerPanel.gameObject.SetActive(false);
-        //canvas.gameObject.SetActive(false);
     }
 
     private void UpdatePointsUI()
     {
         GameManager.IsGameRunning = false;
-        //if (pointCount != null)
-        //{
         pointCount.text = $"Points : {point.Point}";
-        //}
     }
 
     private void SetSelectionButtonsInteractability()

@@ -5,9 +5,7 @@ using Cinemachine;
 
 public class ChangeCameraPriority : MonoBehaviour
 {
-    public CinemachineVirtualCamera ballCamera;
-    public CinemachineVirtualCamera arrowCamera;
-    public CinemachineVirtualCamera hammerCamera;
+    [SerializeField] private CinemachineVirtualCamera Camera;
 
     public GameObject ball;
     public GameObject arrow;
@@ -27,21 +25,15 @@ public class ChangeCameraPriority : MonoBehaviour
         // Set the camera priorities based on which object is on screen
         if (ballOnScreen)
         {
-            ballCamera.Priority = 10;
-            arrowCamera.Priority = 0;
-            hammerCamera.Priority = 0;
+            Camera.Follow = ball.transform;
         }
         else if (arrowOnScreen)
         {
-            ballCamera.Priority = 0;
-            arrowCamera.Priority = 10;
-            hammerCamera.Priority = 0;
+            Camera.Follow = arrow.transform;
         }
         else if (hammerOnScreen)
         {
-            ballCamera.Priority = 0;
-            arrowCamera.Priority = 0;
-            hammerCamera.Priority = 10;
+            Camera.Follow = hammer.transform;
         }
     }
 
