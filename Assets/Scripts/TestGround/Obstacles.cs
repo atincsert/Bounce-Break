@@ -38,11 +38,11 @@ public class Obstacles : MonoBehaviour
         }
         else if (other.gameObject.layer == hammerLayer)
         {
-            //if (FindObjectOfType<Pickup>().HasEffect == true)
-            //{
-            //    gameObject.SetActive(false);
-            //    return;
-            //}
+            if (FindObjectOfType<HammerMovement>().HasEffect == true)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
             // if hammer has its unique power on, don't apply any of the slow effects
             if (gameObject.layer == glassObstacleLayer)
             {
@@ -50,7 +50,7 @@ public class Obstacles : MonoBehaviour
             }
             if (gameObject.layer == woodObstacleLayer)
             {
-                if (other.GetComponent<HammerMover>().Breakable() == false)
+                if (other.GetComponent<HammerMovement>().Breakable() == false)
                 {
                     PointSystem.endZPos = transform.position.z;
                     UIManager.OnPlayerDie?.Invoke();

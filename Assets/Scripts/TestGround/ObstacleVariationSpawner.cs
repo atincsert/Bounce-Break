@@ -12,6 +12,7 @@ public class ObstacleVariationSpawner : MonoBehaviour
     private bool creatingSection;
     private int sectionNumber;
 
+
     private void Update()
     {
         if (!GameManager.IsGameRunning)
@@ -33,7 +34,7 @@ public class ObstacleVariationSpawner : MonoBehaviour
     {
         sectionNumber = Random.Range(0, totalNumberOfSections);
         Instantiate(variations[sectionNumber], new Vector3(0, 0, endZPosOfFirstSection), Quaternion.identity);
-        endZPosOfFirstSection += 40;
+        endZPosOfFirstSection += 20;
         yield return new WaitForSeconds(delayBetweenSections);
         creatingSection = false;
     }

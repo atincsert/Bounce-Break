@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ArrowMovement : MonoBehaviour, IPlayerMover
@@ -12,6 +10,7 @@ public class ArrowMovement : MonoBehaviour, IPlayerMover
     [SerializeField] private Vector3 specialUpSpeedValues = new Vector3(0f, 50f, 10f);
     [SerializeField] private float velocityThreshold;
     [SerializeField] private float minForwardSpeed, maxForwardSpeed;
+    //[SerializeField] private float magnitude = 10f;
 
     private Rigidbody rb;
     private Vector3 downVelocity;
@@ -29,12 +28,17 @@ public class ArrowMovement : MonoBehaviour, IPlayerMover
 
     private void OnEnable()
     {
-        OnTrambolineCollision += BounceConditions;
+        OnTrambolineCollision += Bounce;
     }
 
     private void OnDisable()
     {
-        OnTrambolineCollision -= BounceConditions;
+        OnTrambolineCollision -= Bounce;
+    }
+
+    private void Update()
+    {
+        SetLookForwardAngle();
     }
 
     private void FixedUpdate()
@@ -44,14 +48,37 @@ public class ArrowMovement : MonoBehaviour, IPlayerMover
         RestrictMaxHeight();
     }
 
+    private void SetLookForwardAngle()
+    {
+        var direction = rb.velocity.normalized;
+        var d = transform.InverseTransformDirection(direction);
+        //float speed = 10f;
+        //transform.localRotation = Quaternion.RotateTowards(transform.localRotation, Quaternion.LookRotation(d, Vector3.up), speed * Time.deltaTime);
+        transform.localRotation *= Quaternion.LookRotation(d, transform.up);
+        //this is where arrow or hammer looks to the direction of motion with an angle
+        //if (rb.velocity.y < -Mathf.Epsilon)
+        //{
+        //    transform.LookAt(Vector3.down);
+        //}
+        //else if (rb.velocity.y > Mathf.Epsilon)
+        //{
+        //    transform.LookAt(Vector3.up);
+        //}
+    }
+
     private void SpeedUpDownwardsWhenHoldTouch()
     {
         if (Input.GetMouseButton(0))
         {
             downVelocity = rb.velocity;
             downVelocity += specialDownspeedValues * Time.deltaTime;
+            //magnitude += 0.5f;
             rb.velocity = downVelocity;
         }
+        //if (Input.GetMouseButtonUp(0))
+        //{
+        //    magnitude = 10f;
+        //}
 
         downVelocity = rb.velocity;
     }
@@ -69,14 +96,13 @@ public class ArrowMovement : MonoBehaviour, IPlayerMover
         rb.velocity = upVelocity;
     }
 
-    private void Bounce()
+    public void Bounce()
     {
+        if (rb == null) return;
+        
         rb.velocity += Vector3.up;
-    }
-
-    public void BounceConditions()
-    {
-        Bounce();
+        //var newRbDirection = Vector3.Reflect(transform.InverseTransformDirection(rb.velocity.normalized), Vector3.up);
+        //rb.velocity = newRbDirection.normalized * magnitude;
     }
 
     public void RestrictMaxHeight()

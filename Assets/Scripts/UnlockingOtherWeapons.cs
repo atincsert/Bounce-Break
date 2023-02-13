@@ -18,21 +18,25 @@ public class UnlockingOtherWeapons : MonoBehaviour
     [SerializeField] private GameObject arrowPrefab;
     [SerializeField] private GameObject hammerPrefab;
 
-    private SaveManager saveManager;
     private bool arrowButtonUnlocked = false;
 
     private void Awake()
     {
-        saveManager = FindObjectOfType<SaveManager>(true);
         ballPrefab = FindObjectOfType<BallMovement>(true).gameObject;
         arrowPrefab = FindObjectOfType<ArrowMovement>(true).gameObject;
-        hammerPrefab = FindObjectOfType<HammerMover>(true).gameObject;
+        hammerPrefab = FindObjectOfType<HammerMovement>(true).gameObject;
     }
 
     private void OnEnable()
     {
         PointSystem.OnFirstThresholdPassed += UnlockArrow;
         PointSystem.OnSecondThresholdPassed += UnlockHammer;
+    }
+
+    private void OnDisable()
+    {
+        PointSystem.OnFirstThresholdPassed -= UnlockArrow;
+        PointSystem.OnSecondThresholdPassed -= UnlockHammer;
     }
 
     public void SetWeaponButtonsInteractable()
@@ -45,34 +49,16 @@ public class UnlockingOtherWeapons : MonoBehaviour
     {
         if (arrowButtonUnlocked) return;
         arrowButtonUnlocked = true;
-        Debug.Log($"Arrow interactible : {arrowButton.interactable}");
-
         ballButton.interactable = true;
         arrowButton.interactable = true;
-        //if (saveManager.UnlockedGameObject == null)
-        //{
-        //    saveManager.UnlockedGameObject = arrowPrefab;
-        //    Debug.Log($"Unlocked Arrow save manager");
-        //}
         OnArrowUnlock?.Invoke();
-        //if(saveManager.SelectedGameObject != null && saveManager.SelectedGameObject != ballPrefab && saveManager.SelectedGameObject != hammerPrefab)
-        //    saveManager.SelectedGameObject = arrowPrefab;
     }
 
     private void UnlockHammer()
     {
-        Debug.Log($"Unlock Hammer");
         ballButton.interactable = true;
         arrowButton.interactable = true;
         hammerButton.interactable = true;
-        //if (saveManager.UnlockedGameObject != null)
-        //{
-        //    saveManager.UnlockedGameObject = hammerPrefab;
-        //    Debug.Log($"Unlocked Hammer save manager");
-        //}
-        //if (saveManager.SelectedGameObject != null && saveManager.SelectedGameObject != ballPrefab && saveManager.SelectedGameObject != arrowPrefab)
-        //    saveManager.SelectedGameObject = hammerPrefab;
-
         OnHammerUnlock?.Invoke();
     }
 

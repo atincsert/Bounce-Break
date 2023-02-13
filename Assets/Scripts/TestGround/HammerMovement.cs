@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HammerMover : MonoBehaviour, IPlayerMover
+public class HammerMovement : MonoBehaviour, IPlayerMover
 {
     public static Action OnTrambolineCollision; 
 
@@ -11,14 +11,17 @@ public class HammerMover : MonoBehaviour, IPlayerMover
     [SerializeField] private Vector3 specialDownspeedValues = new Vector3(0f, -100f, 10f);
     [SerializeField] private Vector3 specialUpSpeedValues = new Vector3(0f, 50f, 10f);
     [SerializeField] private float velocityThreshold;
-    [SerializeField] private float minAllowedBreakSpeed;
+    [SerializeField] private Vector3 minAllowedBreakSpeed;
     [SerializeField] private float minForwardSpeed, maxForwardSpeed;
-
+    //[SerializeField] private float magnitude = 10f;
     [SerializeField] private Pickup[] lightningPickups;
 
     private Rigidbody rb;
     private Vector3 downVelocity;
     private Vector3 upVelocity;
+
+    private bool hasEffect;
+    public bool HasEffect { get => hasEffect; set => hasEffect = value; }
 
     private void Awake()
     {
@@ -36,11 +39,11 @@ public class HammerMover : MonoBehaviour, IPlayerMover
         // activate lightning pickups
         foreach (Pickup lightningPickup in lightningPickups)
         {
-            Debug.Log($"Found pickup");
             lightningPickup.gameObject.SetActive(true);
         }
 
-        OnTrambolineCollision += BounceConditions;
+        OnTrambolineCollision += Bounce;
+        Pickup.OnPickedUp += InitializeHaste;
     }
 
     private void OnDisable()
@@ -48,16 +51,24 @@ public class HammerMover : MonoBehaviour, IPlayerMover
         // deactivate lightning pickups
         foreach (Pickup lightningPickup in lightningPickups)
         {
-            if (!lightningPickup.gameObject.activeInHierarchy) return;
+            if (!lightningPickup.gameObject.activeInHierarchy || lightningPickup.gameObject == null) return;
 
             lightningPickup.gameObject.SetActive(false);
         }
 
-        OnTrambolineCollision -= BounceConditions;
+        OnTrambolineCollision -= Bounce;
+        Pickup.OnPickedUp -= InitializeHaste;
+    }
+
+    private void Update()
+    {
+        SetLookForwardAngle();    
     }
 
     private void FixedUpdate()
     {
+        if (hasEffect) return;
+
         SpeedUp();
         SpeedUpDownwardsWhenHoldTouch();
         RestrictMaxHeight();
@@ -65,19 +76,19 @@ public class HammerMover : MonoBehaviour, IPlayerMover
 
     public bool Breakable()
     {
-        if (rb.velocity.z >= minAllowedBreakSpeed)
+        if (rb.velocity.z >= minAllowedBreakSpeed.z || rb.velocity.y >= minAllowedBreakSpeed.y)
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
-    private void LookForwardAngle()
+    private void SetLookForwardAngle()
     {
         // this is where arrow or hammer looks to the direction of motion with an angle 
+        var direction = rb.velocity.normalized;
+        var d = transform.InverseTransformDirection(direction);
+        transform.localRotation *= Quaternion.LookRotation(d, transform.up);
     }
 
     private void SpeedUpDownwardsWhenHoldTouch()
@@ -105,14 +116,32 @@ public class HammerMover : MonoBehaviour, IPlayerMover
         rb.velocity = upVelocity;
     }
 
-    private void Bounce()
+    private void InitializeHaste()
     {
-        rb.velocity += Vector3.up;
+        StartCoroutine(HasteEffect());
     }
 
-    public void BounceConditions()
+    private IEnumerator HasteEffect()
     {
-        Bounce();
+        foreach (Pickup pickup in lightningPickups)
+        {
+            Pickup _pickup = pickup.GetComponent<Pickup>();
+            rb.useGravity = false;
+            rb.velocity = Vector3.forward * _pickup.LightningSpeedValue;
+            hasEffect = true;
+            yield return new WaitForSeconds(_pickup.LightningPowerTimeLimit);
+            rb.useGravity = true;
+            hasEffect = false;
+        }
+    }
+
+    public void Bounce()
+    {
+        if (rb == null) return;
+
+        rb.velocity += Vector3.up;
+        //var newRbDirection = Vector3.Reflect(transform.InverseTransformDirection(rb.velocity.normalized), Vector3.up);
+        //rb.velocity = newRbDirection.normalized * magnitude;
     }
 
     public void RestrictMaxHeight()

@@ -1,53 +1,43 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
 public class ChangeCameraPriority : MonoBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera Camera;
+    //public CinemachineVirtualCamera ballCamera;
+    //public CinemachineVirtualCamera arrowCamera;
+    //public CinemachineVirtualCamera hammerCamera;
 
     public GameObject ball;
     public GameObject arrow;
     public GameObject hammer;
 
-    bool ballOnScreen;
-    bool arrowOnScreen;
-    bool hammerOnScreen;
-
-    void Update()
+    private void Start()
     {
-        // Check if the ball, arrow, or hammer is active and on screen
-        ballOnScreen = ball.activeInHierarchy && IsOnScreen(ball);
-        arrowOnScreen = arrow.activeInHierarchy && IsOnScreen(arrow);
-        hammerOnScreen = hammer.activeInHierarchy && IsOnScreen(hammer);
+        var weapon = SaveManager.ChoosenWeaponAsEnum; 
 
         // Set the camera priorities based on which object is on screen
-        if (ballOnScreen)
+        if (weapon == SaveManager.Weapon.Ball || weapon == SaveManager.Weapon.None)
         {
             Camera.Follow = ball.transform;
+            //ballCamera.Priority = 10;
+            //arrowCamera.Priority = 0;
+            //hammerCamera.Priority = 0;
         }
-        else if (arrowOnScreen)
+        else if (weapon == SaveManager.Weapon.Arrow)
         {
             Camera.Follow = arrow.transform;
+            //ballCamera.Priority = 0;
+            //arrowCamera.Priority = 10;
+            //hammerCamera.Priority = 0;
         }
-        else if (hammerOnScreen)
+        else if (weapon == SaveManager.Weapon.Hammer)
         {
             Camera.Follow = hammer.transform;
+            //ballCamera.Priority = 0;
+            //arrowCamera.Priority = 0;
+            //hammerCamera.Priority = 10;
         }
-    }
-
-    bool IsOnScreen(GameObject obj)
-    {
-        MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
-        
-        if (renderer == null)
-        {
-            Debug.Log($"renderer is null");
-            return false;
-        }
-
-        return renderer.isVisible;
     }
 }
 

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BallMovement : MonoBehaviour, IPlayerMover
@@ -29,12 +27,12 @@ public class BallMovement : MonoBehaviour, IPlayerMover
 
     private void OnEnable()
     {
-        OnTrambolineCollision += BounceConditions;
+        OnTrambolineCollision += Bounce;
     }
 
     private void OnDisable()
     {
-        OnTrambolineCollision -= BounceConditions;
+        OnTrambolineCollision -= Bounce;
     }
 
     private void FixedUpdate()
@@ -69,14 +67,12 @@ public class BallMovement : MonoBehaviour, IPlayerMover
         rb.velocity = upVelocity;
     }
 
-    private void Bounce()
+    public void Bounce()
     {
         rb.velocity += Vector3.up;
-    }
-
-    public void BounceConditions()
-    {
-        Bounce();
+        // new code
+        //var customGravity = new Vector3(0, -100, 0);
+        //Physics.gravity = customGravity;
     }
 
     public void RestrictMaxHeight()

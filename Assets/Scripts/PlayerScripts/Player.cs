@@ -4,7 +4,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private BallMovement ballMovement;
     [SerializeField] private ArrowMovement arrowMovement;
-    [SerializeField] private HammerMover hammerMover;
+    [SerializeField] private HammerMovement hammerMover;
 
     public void SetPlayer(int i)
     {

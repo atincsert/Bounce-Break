@@ -5,7 +5,7 @@ using UnityEngine;
 
 public interface IPlayerMover
 {
-    void BounceConditions();
+    void Bounce();
 
     void RestrictMaxHeight();
 

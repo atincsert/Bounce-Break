@@ -58,6 +58,12 @@ public class UIManager : MonoBehaviour
         UIManager.OnPlayerDie += OpenGameOverPanel;
     }
 
+    private void OnDisable()
+    {
+        PointSystem.OnDisplayPoint -= UpdatePointsUI;
+        UIManager.OnPlayerDie -= OpenGameOverPanel;
+    }
+
     // OnClickEvent
     public void OpenPlayerPanel()
     {
@@ -96,14 +102,14 @@ public class UIManager : MonoBehaviour
         playerPanel.gameObject.SetActive(false);
     }
 
-    private void OpenGameOverPanel()
+    public void OpenGameOverPanel()
     {
         GameManager.IsGameRunning = false;
         gameOverPanel.gameObject.SetActive(true);
         menuPanel.gameObject.SetActive(false);
         playerPanel.gameObject.SetActive(false);
         OnGameOverPanelShown?.Invoke();
-        //OnPlayerDie?.Invoke(); Hakan's code
+        //OnPlayerDie?.Invoke(); //Hakan's code
     }
 
     // OnClickEvent
@@ -120,15 +126,35 @@ public class UIManager : MonoBehaviour
     public void StartGame()
     {
         OnStartButtonPressed?.Invoke();
+        //int count = gameManager.GameStartCount;
+        GameManager.GameStartCount += 1;
+        //count += 1;
+        Debug.Log($"{ GameManager.GameStartCount }");
+        if (GameManager.GameStartCount > 5)
+        {
+            // start of add
+            GameManager.IsGameRunning = false;
+            Debug.Log($"Show interstitial add");
+            GameManager.GameStartCount = 0;
+            // end of add
+            GameManager.IsGameRunning = true;
+        }
+        //Debug.Log($"{ count }");
+        //if (count >= 5)
+        //{
+        //    Debug.Log($"show interstitial add");
+        //    // Show interstitial ads
+        //    count = 0;
+        //}
         menuPanel.gameObject.SetActive(false);
         gameOverPanel.gameObject.SetActive(false);
         playerPanel.gameObject.SetActive(false);
     }
 
-    private void UpdatePointsUI()
+    private void UpdatePointsUI(float point)
     {
         GameManager.IsGameRunning = false;
-        pointCount.text = $"Points : {point.Point}";
+        pointCount.text = $"Points : {(int)point}";
     }
 
     private void SetSelectionButtonsInteractability()
