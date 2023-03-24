@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 480ccf44afaa57c44ba472cb8588a469
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Street Slab - Fortuna
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 01c813dbffa454a448d38812cca22437, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

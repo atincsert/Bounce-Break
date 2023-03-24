@@ -24,8 +24,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button hammerSelectionButton;
     [SerializeField] private Button menuButton;
     [SerializeField] private Button backButton;
+    [SerializeField] private Button infoButton;
+    [SerializeField] private Image infoPanel;
+    [SerializeField] private Button closeInfoButton;
 
     private PointSystem point;
+    private AddHandler addHandler;
 
     private void Awake()
     {
@@ -50,6 +54,7 @@ public class UIManager : MonoBehaviour
         playerPanel.gameObject.SetActive(false);
 
         point = FindObjectOfType<PointSystem>(true);
+        addHandler = FindObjectOfType<AddHandler>(true);
     }
 
     private void OnEnable()
@@ -93,6 +98,10 @@ public class UIManager : MonoBehaviour
         SaveManager.SetChoosenWeapon(SaveManager.Weapon.Hammer);
     }
 
+    public void OpenInfoPanel() => infoPanel.gameObject.SetActive(true);
+
+    public void CloseInfoPanel() => infoPanel.gameObject.SetActive(false);
+
     // OnClickEvent
     public void GoBack()
     {
@@ -128,16 +137,17 @@ public class UIManager : MonoBehaviour
         OnStartButtonPressed?.Invoke();
         //int count = gameManager.GameStartCount;
         GameManager.GameStartCount += 1;
+        //addHandler.LoadInterstitialAd();
         //count += 1;
         Debug.Log($"{ GameManager.GameStartCount }");
         if (GameManager.GameStartCount > 5)
         {
             // start of add
-            GameManager.IsGameRunning = false;
-            Debug.Log($"Show interstitial add");
+            //GameManager.IsGameRunning = false;
+            //addHandler.ShowInterstitialAd();
             GameManager.GameStartCount = 0;
             // end of add
-            GameManager.IsGameRunning = true;
+            //GameManager.IsGameRunning = true;
         }
         //Debug.Log($"{ count }");
         //if (count >= 5)

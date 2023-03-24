@@ -7,7 +7,7 @@ public class Obstacles : MonoBehaviour
 {
     private const int glassObstacleLayer = 7, woodObstacleLayer = 8, ballLayer = 9, arrowLayer = 10, hammerLayer = 11;
 
-    [SerializeField] private float glassSlowRate, woodSlowRate;
+    [SerializeField] private float woodSlowRate;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -55,7 +55,8 @@ public class Obstacles : MonoBehaviour
                     PointSystem.endZPos = transform.position.z;
                     UIManager.OnPlayerDie?.Invoke();
                 }
-                other.GetComponent<Rigidbody>().AddForce(Vector3.back * woodSlowRate, ForceMode.Impulse);
+
+                other.GetComponent<HammerMovement>().DecelerateWhenCollided(woodSlowRate);
                 gameObject.SetActive(false);
             }
         }

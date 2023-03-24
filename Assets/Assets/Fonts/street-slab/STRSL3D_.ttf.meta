@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 1f9ee28d9fd72e646a41b2bd71941f1e
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Street Slab - 3D
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 91ce97055427c5248a74475b4c34c736, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

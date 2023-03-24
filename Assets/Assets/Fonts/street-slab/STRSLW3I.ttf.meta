@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 29b8a5496a70b79479b13d578035ddf7
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Street Slab - Wide 3D
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 14fa5d5ddc3296c4e8d9e8ffe6ca9e44, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

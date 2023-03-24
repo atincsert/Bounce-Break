@@ -110,7 +110,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0ddbc47b1969cd449fa1b3734824fb5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGlass: 0
-  isWood: 1
-  glassSlowRate: 1
-  woodSlowRate: 3
+  woodSlowRate: 0.5

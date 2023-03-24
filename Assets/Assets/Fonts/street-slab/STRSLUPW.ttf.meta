@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 597bd188112108c4c87ae4bf0c028a59
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Street Slab Upper - Wide
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 869c49ab95269ac46a71901d4e30d185, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

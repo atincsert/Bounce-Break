@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[DefaultExecutionOrder(-10)]
 public class HammerMovement : MonoBehaviour, IPlayerMover
 {
-    public static Action OnTrambolineCollision; 
+    public static Action OnTrambolineCollision;
 
     [SerializeField] private float forwardSpeed;
     [SerializeField] private Vector3 specialDownspeedValues = new Vector3(0f, -100f, 10f);
@@ -15,11 +16,14 @@ public class HammerMovement : MonoBehaviour, IPlayerMover
     [SerializeField] private float minForwardSpeed, maxForwardSpeed;
     //[SerializeField] private float magnitude = 10f;
     [SerializeField] private Pickup[] lightningPickups;
+    public float currentAcceleration;
+    private float accelerationSpeed = 0.009f;
+    private float maxSpeed = 30;
 
     private Rigidbody rb;
     private Vector3 downVelocity;
     private Vector3 upVelocity;
-
+    Vector3 velocity, desiredVelocity; // new
     private bool hasEffect;
     public bool HasEffect { get => hasEffect; set => hasEffect = value; }
 
@@ -37,10 +41,10 @@ public class HammerMovement : MonoBehaviour, IPlayerMover
     private void OnEnable()
     {
         // activate lightning pickups
-        foreach (Pickup lightningPickup in lightningPickups)
-        {
-            lightningPickup.gameObject.SetActive(true);
-        }
+        //foreach (Pickup lightningPickup in lightningPickups)
+        //{
+        //    lightningPickup.gameObject.SetActive(true);
+        //}
 
         OnTrambolineCollision += Bounce;
         Pickup.OnPickedUp += InitializeHaste;
@@ -48,21 +52,22 @@ public class HammerMovement : MonoBehaviour, IPlayerMover
 
     private void OnDisable()
     {
-        // deactivate lightning pickups
-        foreach (Pickup lightningPickup in lightningPickups)
-        {
-            if (!lightningPickup.gameObject.activeInHierarchy || lightningPickup.gameObject == null) return;
+        Pickup.OnPickedUp -= InitializeHaste;
+        //if (lightningPickups == null || lightningPickups.Length <= 0) return;
 
-            lightningPickup.gameObject.SetActive(false);
-        }
+        // deactivate lightning pickups
+        //foreach (Pickup lightningPickup in lightningPickups)
+        //{
+        //    if (lightningPickup != null && lightningPickup.gameObject != null && lightningPickup.gameObject.activeInHierarchy)
+        //        lightningPickup.gameObject.SetActive(false);
+        //}
 
         OnTrambolineCollision -= Bounce;
-        Pickup.OnPickedUp -= InitializeHaste;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
-        SetLookForwardAngle();    
+        SetLookForwardAngle();
     }
 
     private void FixedUpdate()
@@ -93,6 +98,8 @@ public class HammerMovement : MonoBehaviour, IPlayerMover
 
     private void SpeedUpDownwardsWhenHoldTouch()
     {
+        if (!GameManager.IsGameRunning) return;
+
         if (Input.GetMouseButton(0))
         {
             downVelocity = rb.velocity;
@@ -105,6 +112,8 @@ public class HammerMovement : MonoBehaviour, IPlayerMover
 
     private void CheckForUpwardVelocityIncreaseDownForce()
     {
+        // Before setting the velocity, check if that velocity is above or below the clamped velocity threshold
+
         upVelocity = rb.velocity;
         if (upVelocity.y > velocityThreshold)
         {
@@ -119,17 +128,19 @@ public class HammerMovement : MonoBehaviour, IPlayerMover
     private void InitializeHaste()
     {
         StartCoroutine(HasteEffect());
+        // start the circular progress bar 5s to show power up is active
     }
 
     private IEnumerator HasteEffect()
     {
         foreach (Pickup pickup in lightningPickups)
         {
-            Pickup _pickup = pickup.GetComponent<Pickup>();
+            /*Pickup _pickup =*/
+            pickup.GetComponent<Pickup>(); /*GetComponent<Pickup>();*/
             rb.useGravity = false;
-            rb.velocity = Vector3.forward * _pickup.LightningSpeedValue;
+            rb.velocity = Vector3.forward * /*_pickup*/pickup.LightningSpeedValue;
             hasEffect = true;
-            yield return new WaitForSeconds(_pickup.LightningPowerTimeLimit);
+            yield return new WaitForSeconds(/*_pickup*/pickup.LightningPowerTimeLimit);
             rb.useGravity = true;
             hasEffect = false;
         }
@@ -149,10 +160,18 @@ public class HammerMovement : MonoBehaviour, IPlayerMover
         CheckForUpwardVelocityIncreaseDownForce();
     }
 
+    public void DecelerateWhenCollided(float slowRate)
+    {
+        currentAcceleration = Mathf.Max(0.1f, currentAcceleration - slowRate);
+    }
+
     public void SpeedUp()
     {
-        forwardSpeed += Time.deltaTime * 0.1f;
-        forwardSpeed = Mathf.Clamp(forwardSpeed, minForwardSpeed, maxForwardSpeed);
-        rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, forwardSpeed);
+        currentAcceleration += accelerationSpeed * Time.deltaTime;
+        currentAcceleration = Mathf.Clamp01(currentAcceleration);
+
+        Vector3 calculatedVelocity = new Vector3(0, rb.velocity.y, currentAcceleration * maxSpeed);
+
+        rb.velocity = calculatedVelocity;
     }
 }

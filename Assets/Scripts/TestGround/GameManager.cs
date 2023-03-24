@@ -4,11 +4,34 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private Player player;
-    private int gameStartCount;
-    private bool isGameRunning;
+    //private int gameStartCount;
+    private static bool isGameRunning;
 
-    //public bool IsGameRunning { get => isGameRunning; set => isGameRunning = value; }
-    public static bool IsGameRunning { get; set; }
+    public static bool IsGameRunning
+    {
+        get
+        {
+            return isGameRunning;
+        }
+        set
+        {
+            isGameRunning = value;
+            HandleIsGameRunning();
+        }
+    }
+
+    private static void HandleIsGameRunning()
+    {
+        if (isGameRunning)
+        {
+            ResumeGame();
+        }
+        else
+        {
+            FreezeGame();
+        }
+    }
+
     //public int GameStartCount { get => gameStartCount; set => gameStartCount = value; }
     public static int GameStartCount { get; set; }
 
@@ -56,6 +79,20 @@ public class GameManager : MonoBehaviour
 
     //    LoadScene(availableSceneIndex);
     //}
+
+    //public static void CheckGameState()
+    //{
+    //    if (IsGameRunning == false)
+    //    {
+    //        FreezeGame();
+    //    }
+
+    //    ResumeGame();
+    //}
+
+    private static void FreezeGame() => Time.timeScale = 0;
+
+    private static void ResumeGame() => Time.timeScale = 1;
 
     private int FindAvailableSceneIndex(int activeSceneIndex, int sceneCountInBuildSettings) => activeSceneIndex < sceneCountInBuildSettings - 1 ? activeSceneIndex + 1 : 0;
 

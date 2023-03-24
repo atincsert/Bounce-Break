@@ -64,11 +64,11 @@ MonoBehaviour:
   specialDownspeedValues: {x: 0, y: -100, z: 10}
   specialUpSpeedValues: {x: 0, y: 50, z: 10}
   velocityThreshold: 0
-  minAllowedBreakSpeed: 0
+  minAllowedBreakSpeed: {x: 0, y: 0, z: 0}
   minForwardSpeed: 0
   maxForwardSpeed: 0
-  magnitude: 10
   lightningPickups: []
+  currentAcceleration: 0.4
 --- !u!54 &1280119532583236347
 Rigidbody:
   m_ObjectHideFlags: 0

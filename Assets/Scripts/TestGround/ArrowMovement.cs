@@ -68,6 +68,8 @@ public class ArrowMovement : MonoBehaviour, IPlayerMover
 
     private void SpeedUpDownwardsWhenHoldTouch()
     {
+        if (!GameManager.IsGameRunning) return;
+
         if (Input.GetMouseButton(0))
         {
             downVelocity = rb.velocity;
@@ -112,7 +114,7 @@ public class ArrowMovement : MonoBehaviour, IPlayerMover
 
     public void SpeedUp()
     {
-        forwardSpeed += Time.deltaTime * 0.1f;
+        forwardSpeed += Time.deltaTime * 0.25f;
         forwardSpeed = Mathf.Clamp(forwardSpeed, minForwardSpeed, maxForwardSpeed);
         rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y, forwardSpeed);
     }
